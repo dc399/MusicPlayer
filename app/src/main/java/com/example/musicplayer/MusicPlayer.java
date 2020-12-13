@@ -52,6 +52,7 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
     private int nowTimeInt=0;
     private int timeInt=0;
     private String url;
+    private boolean isSeekBarChanging;
     private boolean fileExist=false;
     private boolean hadPlay=false;
     private String[] nameList={"","","","",""};
@@ -83,15 +84,17 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
                     seekBar.setMax(mediaPlayer.getDuration());
                     break;
                 case UPDATE:
-                    try {
+                        try {
 //                        change=false;
 //                        seekBar.setProgress(mediaPlayer.getCurrentPosition());
 //                        change=true;
-                        nowTimeInt=mediaPlayer.getCurrentPosition();
-                        nowTimeT.setText(formatTime(nowTimeInt));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                            nowTimeInt = mediaPlayer.getCurrentPosition();
+                            nowTimeT.setText(formatTime(nowTimeInt));
+                            seekBar.setProgress((int) (nowTimeInt*100.0/(timeInt*1.0)));
+                            //onProgressChanged(seekBar,nowTimeInt,false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     //handler.sendEmptyMessageDelayed(UPDATE);
                     handler.sendEmptyMessageDelayed(UPDATE,500);
                     break;
@@ -262,23 +265,22 @@ public class MusicPlayer extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        //if(change==true) {
+        if(b==true) {
             nowTimeInt = (int) (i * 1.0 / 100.0 * timeInt);
+        }
             nowTimeT.setText(formatTime(nowTimeInt));
-       // }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        //change=true;
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        //if(change==true) {
+            //nowTimeInt = (int) (seekBar.getProgress() * 1.0 / 100.0 * timeInt);
             nowTimeT.setText(formatTime(nowTimeInt));
             mediaPlayer.seekTo(nowTimeInt);
-        //}
+
     }
     private String formatTime(int length){
         Date date = new Date(length);
